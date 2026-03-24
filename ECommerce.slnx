@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Core/Core.csproj" Id="b1ea523f-2abd-4458-bc12-ea58994d5c7b" />
+  <Project Path="Data/Data.csproj" />
+</Solution>
