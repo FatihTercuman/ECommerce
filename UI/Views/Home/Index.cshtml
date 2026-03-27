@@ -1,0 +1,341 @@
+﻿@model IEnumerable<ProductListItemDto>
+
+@{
+    ViewData["Title"] = "Ürün Listesi";
+}
+
+<style>
+    .products-section {
+        padding: 2rem 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    .products-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+        .products-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .products-header p {
+            font-size: 1rem;
+            color: #64748b;
+        }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+    .product-image-container {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .no-image {
+        color: #cbd5e1;
+        font-size: 3rem;
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .product-body {
+        padding: 1.25rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-category {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-brand {
+        font-size: 0.8rem;
+        color: #3b82f6;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .product-price {
+        margin-bottom: 1rem;
+    }
+
+    .price-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .price-original {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        text-decoration: line-through;
+    }
+
+    .price-current {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .discount-percent {
+        background: #10b981;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .stars {
+        color: #f59e0b;
+    }
+
+    .rating-text {
+        color: #64748b;
+    }
+
+    .product-btn {
+        margin-top: auto;
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+        .product-btn:hover {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .product-btn:active {
+            transform: scale(0.98);
+        }
+
+    .empty-message {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #64748b;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+
+    .empty-message h3 {
+        font-size: 1.5rem;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    
+
+</style>
+
+<section class="products-section">
+    <div class="container">
+        <div class="products-header">
+            <h1>
+                <i class="fas fa-shopping-bag" style="margin-right: 0.5rem; color: #2563eb;"></i>
+                Ürünler
+            </h1>
+            <p>@Model.Count() ürün bulunuyor</p>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="product-grid">
+                @foreach (var product in Model)
+                {
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            @if (!string.IsNullOrEmpty(product.CoverImageUrl))
+                            {
+                                <img src="@product.CoverImageUrl" alt="@product.Name" class="product-image" loading="lazy">
+                            }
+                            else
+                            {
+                                <i class="fas fa-image no-image"></i>
+                            }
+
+                            @if (product.DiscountRate > 0)
+                            {
+                                <div class="discount-badge">
+                                    -%@product.DiscountRate.ToString("0")
+                                </div>
+                            }
+                        </div>
+
+                        <div class="product-body">
+                            <div class="product-category">
+                                @if (!string.IsNullOrEmpty(product.SubcategoryName))
+                                {
+                                    @product.SubcategoryName
+                                }
+                                else if (!string.IsNullOrEmpty(product.CategoryName))
+                                {
+                                    @product.CategoryName
+                                }
+                            </div>
+
+                            <h5 class="product-title">@product.Name</h5>
+
+                            @if (!string.IsNullOrEmpty(product.BrandName))
+                            {
+                                <div class="product-brand">
+                                    <i class="fas fa-trademark"></i> @product.BrandName
+                                </div>
+                            }
+
+                            <div class="product-price">
+                                <div class="price-row">
+                                    @if (product.DiscountRate > 0)
+                                    {
+                                        <span class="price-original">₺@product.Price.ToString("0.00")</span>
+                                    }
+                                    <span class="price-current">₺@product.DiscountedPrice.ToString("0.00")</span>
+                                    @if (product.DiscountRate > 0)
+                                    {
+                                        <span class="discount-percent">%@product.DiscountRate.ToString("0")</span>
+                                    }
+                                </div>
+                            </div>
+
+                            @if (product.Rating > 0 || product.ReviewCount > 0)
+                            {
+                                <div class="product-rating">
+                                    <div class="stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= product.Rating)
+                                            {
+                                                <i class="fas fa-star"></i>
+                                            }
+                                            else if (i - product.Rating < 1 && product.Rating % 1 != 0)
+                                            {
+                                                <i class="fas fa-star-half-alt"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star"></i>
+                                            }
+                                        }
+                                    </div>
+                                    <span class="rating-text">@product.Rating.ToString("0.0") (@product.ReviewCount yorum)</span>
+                                </div>
+                            }
+
+                            <button class="product-btn">
+                                <i class="fas fa-cart-plus"></i>
+                                Sepete Ekle
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-message">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>Ürün Bulunamadı</h3>
+                <p>Şu anda listelemek için ürün bulunmamaktadır.</p>
+            </div>
+        }
+    </div>
+</section>
